@@ -123,10 +123,10 @@ func (g *GeoIp2) Stop() error {
 	return <-g.exit
 }
 
-func (g *GeoIp2) Provision(ctx caddy.Context) error {
+func (g *GeoIp2) Provision(_ caddy.Context) error {
 	caddy.Log().Named("geoip2").Info(fmt.Sprintf("Provision"))
 
-	var repl = ctx.Value(caddy.ReplacerCtxKey).(*caddy.Replacer)
+	var repl = caddy.NewReplacer()
 
 	if g.UpdateUrl == "" {
 		g.UpdateUrl = "https://updates.maxmind.com"
