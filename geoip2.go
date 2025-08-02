@@ -183,22 +183,22 @@ func (g *GeoIp2) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 			continue
 		}
 		switch key {
-		case "accountId":
+		case "account_id":
 			g.AccountID = value
 			break
-		case "databaseDirectory":
+		case "database_directory":
 			g.DatabaseDirectory = value
 			break
-		case "licenseKey":
+		case "license_key":
 			g.LicenseKey = value
 			break
-		case "editionID":
+		case "edition_id":
 			g.EditionID = value
 			break
-		case "updateUrl":
+		case "update_url":
 			g.UpdateUrl = value
 			break
-		case "updateFrequency":
+		case "update_frequency":
 			UpdateFrequency, err := strconv.Atoi(value)
 			if err == nil {
 				g.UpdateFrequency = UpdateFrequency

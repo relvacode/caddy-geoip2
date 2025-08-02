@@ -19,12 +19,12 @@ xcaddy  \
 
   # accountId, licenseKey and updateUrl and updateFrequency are only requires for automatic updates
   geoip2 {
-    accountId         "{env.GEO_ACCOUNT_ID}"
-    licenseKey        "{env.GEO_API_KEY}"
-    databaseDirectory "/tmp/"
-    editionID         "GeoLite2-City"
-    updateUrl         "https://updates.maxmind.com"
-    updateFrequency   86400   # in seconds
+    account_id         "{env.GEO_ACCOUNT_ID}"
+    license_key        "{env.GEO_API_KEY}"
+    database_directory "/tmp/"
+    edition_id         "GeoLite2-City"
+    update_url         "https://updates.maxmind.com"
+    update_frequency   86400   # in seconds
   }
 }
 
