@@ -15,14 +15,13 @@ xcaddy  \
 
 ```
 {
-  order geoip2_vars first
+  order geoip2 first
 
-  # Only configure databaseDirectory and editionID when autoupdate is not desired.
+  # accountId, licenseKey and updateUrl and updateFrequency are only requires for automatic updates
   geoip2 {
-    accountId         xxxx
+    accountId         "{env.GEO_ACCOUNT_ID}"
+    licenseKey        "{env.GEO_API_KEY}"
     databaseDirectory "/tmp/"
-    licenseKey        "xxxx"
-    lockFile          "/tmp/geoip2.lock"
     editionID         "GeoLite2-City"
     updateUrl         "https://updates.maxmind.com"
     updateFrequency   86400   # in seconds
@@ -30,11 +29,7 @@ xcaddy  \
 }
 
 localhost {
-  geoip2_vars strict 
-  # strict: Alway ignore 'X-Forwarded-For' header 
-  # wild:   Trust 'X-Forwarded-For' header if existed
-  # trusted_proxies: Trust 'X-Forwarded-For' header if trusted_proxies is also valid (see https://caddyserver.com/docs/caddyfile/options#trusted-proxies)
-  # default: trusted_proxies
+  geoip2
 
   # Add country and state code to the header
   header geoip-country "{geoip2.country_code}"
