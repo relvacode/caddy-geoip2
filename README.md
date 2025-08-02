@@ -8,7 +8,7 @@ Manages Downloading and Refreshing the Maxmind Database via https://github.com/m
 
 ```sh
 xcaddy  \
-  --with github.com/zhangjiayin/caddy-geoip2
+  --with github.com/relvacode/caddy-geoip2
 ```
 
 ## Caddyfile example
