@@ -241,12 +241,6 @@ func (g *GeoIp2) update() error {
 			_ = g.db.Close()
 			g.db = nil
 		}
-
-		// Commit the writer
-		err = w.Commit()
-		if err != nil {
-			return fmt.Errorf("commiting updates to database at %s: %w", g.filePath, err)
-		}
 	}
 
 	// Already open don't need to open again
