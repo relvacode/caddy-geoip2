@@ -15,26 +15,24 @@ import (
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 )
 
-// http.handlers.geoip2 is an GeoIp2Handler server handler.
-// it uses GeoIp2Handler Data to identify the location of the IP
-type GeoIp2Handler struct {
+type Handler struct {
 	state *GeoIp2
 	ctx   caddy.Context
 }
 
 func init() {
-	caddy.RegisterModule(new(GeoIp2Handler))
-	httpcaddyfile.RegisterHandlerDirective("geoip2_vars", parseCaddyfile)
+	caddy.RegisterModule(new(Handler))
+	httpcaddyfile.RegisterHandlerDirective("geoip2", parseCaddyfile)
 }
 
-func (*GeoIp2Handler) CaddyModule() caddy.ModuleInfo {
+func (*Handler) CaddyModule() caddy.ModuleInfo {
 	return caddy.ModuleInfo{
 		ID:  "http.handlers.geoip2",
-		New: func() caddy.Module { return new(GeoIp2Handler) },
+		New: func() caddy.Module { return new(Handler) },
 	}
 }
 
-func (m *GeoIp2Handler) ClientIP(r *http.Request) (netip.Addr, error) {
+func (m *Handler) ClientIP(r *http.Request) (netip.Addr, error) {
 	// if handshake is not finished, we infer 0-RTT that has
 	// not verified remote IP; could be spoofed, so we throw
 	// HTTP 425 status to tell the client to try again after
@@ -65,7 +63,7 @@ func (m *GeoIp2Handler) ClientIP(r *http.Request) (netip.Addr, error) {
 	return ipAddr, nil
 }
 
-func (m *GeoIp2Handler) bindRequest(r *http.Request, repl *caddy.Replacer) {
+func (m *Handler) bindRequest(r *http.Request, repl *caddy.Replacer) {
 	clientIP, _ := m.ClientIP(r)
 
 	if clientIP.IsUnspecified() {
@@ -217,7 +215,7 @@ func (m *GeoIp2Handler) bindRequest(r *http.Request, repl *caddy.Replacer) {
 	repl.Set("geoip2.traits_static_ip_score", record.Traits.StaticIpScore)
 }
 
-func (m *GeoIp2Handler) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddyhttp.Handler) error {
+func (m *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddyhttp.Handler) error {
 	repl := r.Context().Value(caddy.ReplacerCtxKey).(*caddy.Replacer)
 	//init some variables with default value ""
 	repl.Set("geoip2.ip_address", "")
@@ -324,18 +322,18 @@ func (m *GeoIp2Handler) ServeHTTP(w http.ResponseWriter, r *http.Request, next c
 
 // for http handler
 func parseCaddyfile(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler, error) {
-	var m GeoIp2Handler
+	var m Handler
 	err := m.UnmarshalCaddyfile(h.Dispenser)
 	return &m, err
 
 }
 
 // UnmarshalCaddyfile implements caddyfile.Unmarshaler.
-func (m *GeoIp2Handler) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
+func (m *Handler) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 	return nil
 }
 
-func (m *GeoIp2Handler) Provision(ctx caddy.Context) error {
+func (m *Handler) Provision(ctx caddy.Context) error {
 	caddy.Log().Named("http.handlers.geoip2").Info(fmt.Sprintf("Provision"))
 	app, err := ctx.App(ModuleName)
 	if err != nil {
@@ -345,16 +343,16 @@ func (m *GeoIp2Handler) Provision(ctx caddy.Context) error {
 	m.ctx = ctx
 	return nil
 }
-func (m *GeoIp2Handler) Validate() error {
+func (m *Handler) Validate() error {
 	caddy.Log().Named("http.handlers.geoip2").Info(fmt.Sprintf("Validate"))
 	return nil
 }
 
 // Interface guards
 var (
-	_ caddy.Module                = (*GeoIp2Handler)(nil)
-	_ caddy.Provisioner           = (*GeoIp2Handler)(nil)
-	_ caddy.Validator             = (*GeoIp2Handler)(nil)
-	_ caddyhttp.MiddlewareHandler = (*GeoIp2Handler)(nil)
-	_ caddyfile.Unmarshaler       = (*GeoIp2Handler)(nil)
+	_ caddy.Module                = (*Handler)(nil)
+	_ caddy.Provisioner           = (*Handler)(nil)
+	_ caddy.Validator             = (*Handler)(nil)
+	_ caddyhttp.MiddlewareHandler = (*Handler)(nil)
+	_ caddyfile.Unmarshaler       = (*Handler)(nil)
 )
