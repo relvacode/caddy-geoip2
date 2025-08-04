@@ -1,8 +1,6 @@
 # GeoIP2
 
-Provides middleware for resolving a users IP address against the Maxmind Geo IP Database.
-
-Manages Downloading and Refreshing the Maxmind Database via https://github.com/maxmind/geoipupdate
+Provides middleware for resolving a users IP address against multiple Maxmind Geo IP databases with self update support
 
 ## Build
 
@@ -17,14 +15,15 @@ xcaddy  \
 {
   order geoip2 first
 
-  # accountId, licenseKey and updateUrl and updateFrequency are only requires for automatic updates
+  # accountId, licenseKey and updateUrl and updateFrequency are only required for automatic updates
   geoip2 {
     account_id         "{env.GEO_ACCOUNT_ID}"
     license_key        "{env.GEO_API_KEY}"
     database_directory "/tmp/"
-    edition_id         "GeoLite2-City"
+    edition_id         GeoLite2-City
+    edition_id         GeoLite2-ASN
     update_url         "https://updates.maxmind.com"
-    update_frequency   86400   # in seconds
+    update_frequency   604800   # in seconds
   }
 }
 
@@ -33,92 +32,41 @@ localhost {
 
   # Add country and state code to the header
   header geoip-country "{geoip2.country_code}"
-  header geoip-subdivision "{geoip2.subdivisions_1_iso_code}"
 
-  # Respond to anyone in the US and Canada, but not from Ohio
-  @geofilter expression ({geoip2.country_code} == "US" || {geoip2.country_code} == "CA") && {geoip2.subdivisions_1_iso_code} != "OH"
+  @geofilter expression `{geoip2.country_code} in ["CN", "IR", "RU"]`
   
-  respond @geofilter "hello everyone except Ohioan:
-    geoip2.country_code:{geoip2.country_code}
-    geoip2.country_name:{geoip2.country_name}
-    geoip2.city_geoname_id:{geoip2.city_geoname_id}
-    geoip2.city_name:{geoip2.city_name}
-    geoip2.location_latitude:{geoip2.location_latitude}
-    geoip2.location_longitude:{geoip2.location_longitude}
-    geoip2.location_time_zone:{geoip2.location_time_zone}"
+  error @geofilter "Blocked by geographic location" 403
 }
 
 ```
 
-## variables
+## Variables
 
-- geoip2.country_code
-- geoip2.country_name
-- geoip2.country_eu
-- geoip2.country_locales
-- geoip2.country_confidence
-- geoip2.country_names
-- geoip2.country_geoname_id
-- geoip2.continent_code
-- geoip2.continent_locales
-- geoip2.continent_names
-- geoip2.continent_geoname_id
-- geoip2.continent_name
-- geoip2.city_confidence
-- geoip2.city_locales
-- geoip2.city_names
-- geoip2.city_geoname_id
-- geoip2.city_name
-- geoip2.location_latitude
-- geoip2.location_longitude
-- geoip2.location_time_zone
-- geoip2.location_accuracy_radius
-- geoip2.location_average_income
-- geoip2.location_metro_code
-- geoip2.location_population_density
-- geoip2.postal_code
-- geoip2.postal_confidence
-- geoip2.registeredcountry_geoname_id
-- geoip2.registeredcountry_is_in_european_union
-- geoip2.registeredcountry_iso_code
-- geoip2.registeredcountry_names
-- geoip2.registeredcountry_name
-- geoip2.representedcountry_geoname_id
-- geoip2.representedcountry_is_in_european_union	
-- geoip2.representedcountry_iso_code
-- geoip2.representedcountry_names
-- geoip2.representedcountry_locales
-- geoip2.representedcountry_confidence
-- geoip2.representedcountry_type
-- geoip2.representedcountry_name
-- geoip2.traits_is_anonymous_proxy
-- geoip2.traits_is_anonymous_vpn
-- geoip2.traits_is_satellite_provider
-- geoip2.traits_autonomous_system_number
-- geoip2.traits_autonomous_system_organization
-- geoip2.traits_autonomous_system_organization
-- geoip2.traits_autonomous_system_organization
-- geoip2.traits_connection_type
-- geoip2.traits_domain
-- geoip2.traits_is_hosting_provider
-- geoip2.traits_is_legitimate_proxy
-- geoip2.traits_is_public_proxy
-- geoip2.traits_is_residential_proxy
-- geoip2.traits_is_tor_exit_node
-- geoip2.traits_isp
-- geoip2.traits_mobile_country_code
-- geoip2.traits_mobile_network_code
-- geoip2.traits_network
-- geoip2.traits_organization
-- geoip2.traits_user_type
-- geoip2.traits_userCount
-- geoip2.traits_static_ip_score
+### Country
 
-## ref
+Supported with the `GeoLite2-City` and `GeoLite2-Country` editions
 
-- https://github.com/caddyserver/caddy
-- https://github.com/maxmind/geoipupdate
-- https://github.com/shift72/caddy-geo-ip
-- https://github.com/aablinov/caddy-geoip
-- https://github.com/zhangjiayin/caddy-mysql-adapter
-- https://github.com/zhangjiayin/caddy-mysql-storage
+- `geoip2.country_code`
+- `geoip2.country_name`
+- `geoip2.country_eu`
+- `geoip2.continent_code`
+- `geoip2.continent_name`
+
+### City
+
+Supported with the `GeoLite2-City` edition
+
+- `geoip2.city_name`
+- `geoip2.postal_code`
+- `geoip2.location_latitude`
+- `geoip2.location_longitude`
+- `geoip2.location_timezone`
+- `geoip2.location_accuracy_radius`
+
+### ASN
+
+Supported with the `GeoLite2-ASN` edition
+
+- `geoip2.asn_network`
+- `geoip2.asn_organisation`
+- `geoip2.asn_system_number`
