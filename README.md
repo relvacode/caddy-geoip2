@@ -52,7 +52,6 @@ localhost {
 
 ## variables
 
-- geoip2.ip_address
 - geoip2.country_code
 - geoip2.country_name
 - geoip2.country_eu

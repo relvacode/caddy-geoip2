@@ -77,9 +77,6 @@ func (m *Handler) bindRequest(r *http.Request, repl *caddy.Replacer) {
 		return
 	}
 
-	repl.Set("geoip2.ip_address", clientIP.String())
-
-	//country
 	repl.Set("geoip2.country_code", record.Country.ISOCode)
 
 	for key, element := range record.Country.Names {
@@ -113,8 +110,6 @@ func (m *Handler) bindRequest(r *http.Request, repl *caddy.Replacer) {
 	repl.Set("geoip2.city_locales", record.City.Locales)
 	repl.Set("geoip2.city_names", record.City.Names)
 	repl.Set("geoip2.city_geoname_id", record.City.GeoNameID)
-	// val, _ = record.City.Names["en"]
-	// repl.Set("geoip2.city_name", val)
 
 	for key, element := range record.City.Names {
 		repl.Set("geoip2.city_names_"+key, element)
@@ -217,106 +212,7 @@ func (m *Handler) bindRequest(r *http.Request, repl *caddy.Replacer) {
 
 func (m *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddyhttp.Handler) error {
 	repl := r.Context().Value(caddy.ReplacerCtxKey).(*caddy.Replacer)
-	//init some variables with default value ""
-	repl.Set("geoip2.ip_address", "")
-	repl.Set("geoip2.country_code", "")
-	repl.Set("geoip2.country_name", "")
-	repl.Set("geoip2.country_eu", "")
-	repl.Set("geoip2.country_locales", "")
-	repl.Set("geoip2.country_confidence", "")
-	repl.Set("geoip2.country_names", "")
-
-	repl.Set("geoip2.country_names_0", "")
-	repl.Set("geoip2.country_names_1", "")
-	repl.Set("geoip2.country_geoname_id", "")
-	repl.Set("geoip2.continent_code", "")
-	repl.Set("geoip2.continent_locales", "")
-	repl.Set("geoip2.continent_names", "")
-
-	repl.Set("geoip2.continent_names_0", "")
-	repl.Set("geoip2.continent_names_1", "")
-
-	repl.Set("geoip2.continent_geoname_id", "")
-	repl.Set("geoip2.continent_name", "")
-	repl.Set("geoip2.city_confidence", "")
-	repl.Set("geoip2.city_locales", "")
-	repl.Set("geoip2.city_names", "")
-	repl.Set("geoip2.city_names_0", "")
-	repl.Set("geoip2.city_names_1", "")
-	repl.Set("geoip2.city_geoname_id", "")
-	// repl.Set("geoip2.city_name", val)
-	repl.Set("geoip2.city_name", "")
-	repl.Set("geoip2.location_latitude", "")
-	repl.Set("geoip2.location_longitude", "")
-	repl.Set("geoip2.location_time_zone", "")
-	repl.Set("geoip2.location_accuracy_radius", "")
-	repl.Set("geoip2.location_average_income", "")
-	repl.Set("geoip2.location_metro_code", "")
-	repl.Set("geoip2.location_population_density", "")
-	repl.Set("geoip2.postal_code", "")
-	repl.Set("geoip2.postal_confidence", "")
-	repl.Set("geoip2.registeredcountry_geoname_id", "")
-	repl.Set("geoip2.registeredcountry_is_in_european_union", "")
-	repl.Set("geoip2.registeredcountry_iso_code", "")
-	repl.Set("geoip2.registeredcountry_names", "")
-	repl.Set("geoip2.registeredcountry_names_0", "")
-	repl.Set("geoip2.registeredcountry_names_1", "")
-
-	repl.Set("geoip2.registeredcountry_name", "")
-	repl.Set("geoip2.representedcountry_geoname_id", "")
-	repl.Set("geoip2.representedcountry_is_in_european_union", "")
-	repl.Set("geoip2.representedcountry_iso_code", "")
-	repl.Set("geoip2.representedcountry_names", "")
-	repl.Set("geoip2.representedcountry_locales", "")
-	repl.Set("geoip2.representedcountry_confidence", "")
-	repl.Set("geoip2.representedcountry_type", "")
-	repl.Set("geoip2.representedcountry_name", "")
-	repl.Set("geoip2.representedcountry_names_0", "")
-	repl.Set("geoip2.representedcountry_names_1", "")
-	repl.Set("geoip2.subdivisions", "")
-	repl.Set("geoip2.traits_is_anonymous_proxy", "")
-	repl.Set("geoip2.traits_is_anonymous_vpn", "")
-	repl.Set("geoip2.traits_is_satellite_provider", "")
-	repl.Set("geoip2.traits_autonomous_system_number", "")
-	repl.Set("geoip2.traits_autonomous_system_organization", "")
-	repl.Set("geoip2.traits_connection_type", "")
-	repl.Set("geoip2.traits_domain", "")
-	repl.Set("geoip2.traits_is_hosting_provider", "")
-	repl.Set("geoip2.traits_is_legitimate_proxy", "")
-	repl.Set("geoip2.traits_is_public_proxy", "")
-	repl.Set("geoip2.traits_is_residential_proxy", "")
-	repl.Set("geoip2.traits_is_tor_exit_node", "")
-	repl.Set("geoip2.traits_isp", "")
-	repl.Set("geoip2.traits_mobile_country_code", "")
-	repl.Set("geoip2.traits_mobile_network_code", "")
-	repl.Set("geoip2.traits_network", "")
-	repl.Set("geoip2.traits_organization", "")
-	repl.Set("geoip2.traits_user_type", "")
-	repl.Set("geoip2.traits_userCount", "")
-	repl.Set("geoip2.traits_static_ip_score", "")
-
-	repl.Set("geoip2.subdivisions_1_confidence", "")
-	repl.Set("geoip2.subdivisions_1_geoname_id", "")
-	repl.Set("geoip2.subdivisions_1_iso_code", "")
-	repl.Set("geoip2.subdivisions_1_locales", "")
-	repl.Set("geoip2.subdivisions_1_locales_en", "")
-	repl.Set("geoip2.subdivisions_1_names", "")
-	repl.Set("geoip2.subdivisions_1_names_0", "")
-	repl.Set("geoip2.subdivisions_1_names_1", "")
-	repl.Set("geoip2.subdivisions_1_name", "")
-
-	repl.Set("geoip2.subdivisions_2_confidence", "")
-	repl.Set("geoip2.subdivisions_2_geoname_id", "")
-	repl.Set("geoip2.subdivisions_2_iso_code", "")
-	repl.Set("geoip2.subdivisions_2_locales", "")
-	repl.Set("geoip2.subdivisions_2_locales_en", "")
-	repl.Set("geoip2.subdivisions_2_names", "")
-	repl.Set("geoip2.subdivisions_2_names_0", "")
-	repl.Set("geoip2.subdivisions_2_names_1", "")
-	repl.Set("geoip2.subdivisions_2_name", "")
-
 	m.bindRequest(r, repl)
-
 	return next.ServeHTTP(w, r)
 }
 
